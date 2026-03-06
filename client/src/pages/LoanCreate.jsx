@@ -36,7 +36,7 @@ const LoanCreate = () => {
   const estimatedPayment = () => {
     const amount = parseFloat(formData.amount) || 0;
     const term = parseInt(formData.termMonths) || 1;
-    const rate = 15 / 100;
+    const rate = 15 / 100 / 12;
     if (amount > 0 && term > 0) {
       return (amount * (rate * Math.pow(1 + rate, term))) / (Math.pow(1 + rate, term) - 1);
     }
@@ -104,7 +104,7 @@ const LoanCreate = () => {
 
                 {formData.amount && formData.termMonths && (
                   <div className="alert alert-info">
-                    <span>Estimated monthly payment at 15% APR: <strong>{formatCurrency(estimatedPayment())}</strong></span>
+                    <span>Estimated monthly payment at 15% Monthly: <strong>{formatCurrency(estimatedPayment())}</strong></span>
                   </div>
                 )}
 
@@ -130,7 +130,7 @@ const LoanCreate = () => {
                     <input type="text" name="emp_position" value={formData.employmentInfo.position} onChange={handleChange} placeholder="Job Title" className="input input-bordered" />
                   </div>
                   <div className="form-control">
-                    <label className="label"><span className="label-text font-medium">Monthly Income (₱)</span></label>
+                    <label className="label"><span className="label-text font-medium">Monthly Income ($)</span></label>
                     <input type="number" name="emp_monthlyIncome" value={formData.employmentInfo.monthlyIncome} onChange={handleChange} placeholder="5000" className="input input-bordered" />
                   </div>
                   <div className="form-control">

@@ -31,6 +31,14 @@ const PERMISSIONS = {
   VIEW_SETTINGS: 'view_settings',
   EDIT_SETTINGS: 'edit_settings',
 
+  // Customer Management
+  VIEW_CUSTOMERS: 'view_customers',
+  CREATE_CUSTOMER: 'create_customer',
+  EDIT_CUSTOMER: 'edit_customer',
+  DELETE_CUSTOMER: 'delete_customer',
+  VERIFY_KYC: 'verify_kyc',
+  ASSESS_RISK: 'assess_risk',
+
   // Dashboard
   VIEW_ADMIN_DASHBOARD: 'view_admin_dashboard',
   VIEW_OFFICER_DASHBOARD: 'view_officer_dashboard',

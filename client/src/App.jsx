@@ -22,6 +22,9 @@ import Profile from './pages/Profile';
 import Security from './pages/Security';
 import Unauthorized from './pages/Unauthorized';
 import NotFound from './pages/NotFound';
+import CustomerList from './pages/CustomerList';
+import CustomerForm from './pages/CustomerForm';
+import CustomerDetail from './pages/CustomerDetail';
 
 const App = () => {
   return (
@@ -92,6 +95,33 @@ const App = () => {
               {/* Profile & Security */}
               <Route path="/profile" element={<Profile />} />
               <Route path="/security" element={<Security />} />
+
+              {/* Customer Management */}
+              <Route
+                path="/customers"
+                element={
+                  <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.LOAN_OFFICER, ROLES.MANAGER]}>
+                    <CustomerList />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/customers/new"
+                element={
+                  <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.LOAN_OFFICER, ROLES.CUSTOMER]}>
+                    <CustomerForm />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/customers/:id" element={<CustomerDetail />} />
+              <Route
+                path="/customers/:id/edit"
+                element={
+                  <ProtectedRoute allowedRoles={[ROLES.ADMIN, ROLES.LOAN_OFFICER]}>
+                    <CustomerForm />
+                  </ProtectedRoute>
+                }
+              />
             </Route>
 
             {/* 404 */}
