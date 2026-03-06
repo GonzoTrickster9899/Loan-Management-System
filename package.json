@@ -1,0 +1,19 @@
+{
+  "name": "loan-management-system",
+  "version": "1.0.0",
+  "description": "Loan Management System - MERN Stack with DaisyUI",
+  "private": true,
+  "scripts": {
+    "server": "cd server && npm start",
+    "server:dev": "cd server && npm run dev",
+    "client": "cd client && npm start",
+    "client:dev": "cd client && npm run dev",
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "build": "cd client && npm run build",
+    "start": "npm run server"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
