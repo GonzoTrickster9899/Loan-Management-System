@@ -1,6 +1,6 @@
 # 🏦 LoanVault — Loan Management System
 
-A full-stack **MERN** (MongoDB, Express, React, Node.js) Loan Management System with **DaisyUI** for the UI layer. Features secure authentication, role-based access control (RBAC), two-factor authentication (2FA), and a complete loan application workflow.
+A full-stack **MERN** (MongoDB, Express, React, Node.js) Loan Management System with **DaisyUI** for the UI layer. Features secure authentication, role-based access control (RBAC), two-factor authentication (2FA), a complete loan application workflow, and comprehensive customer (borrower) management with KYC verification.
 
 ---
 
@@ -29,33 +29,72 @@ A full-stack **MERN** (MongoDB, Express, React, Node.js) Loan Management System 
 - **Password Reset**: Secure password recovery via email
 - **Multi-Role Access**:
   - **Admin** — Full system access, user management, configuration, reporting
-  - **Loan Officer** — Manage/evaluate/process loan applications
-  - **Manager/Approver** — Review and approve/reject loan applications
-  - **Customer/Borrower** — Submit applications and view loan status
+  - **Loan Officer** — Manage/evaluate/process loan applications, verify KYC
+  - **Manager/Approver** — Review and approve/reject loan applications, assess risk
+  - **Customer/Borrower** — Submit applications, view loan status, create borrower profile
 - **RBAC**: Fine-grained role-based access control with permission mapping
 - **Two-Factor Authentication (2FA)**: Optional TOTP via authenticator apps (Google Authenticator, Authy, etc.) with backup codes
 - **Account Security**: Password hashing (bcrypt, 12 rounds), account lockout after 5 failed attempts, rate limiting
 
+### 👤 Customer (Borrower) Management
+- **Customer Profile Creation**
+  - Detailed borrower profiles with personal information (name, email, phone, DOB, gender, civil status, nationality)
+  - Multi-step creation form with validation
+  - PH-localized address fields (barangay, province, city)
+  - Current and permanent address management
+- **KYC (Know Your Customer) Verification**
+  - Document upload system supporting PDF, JPG, PNG (max 5MB)
+  - Document categories: Government ID, Proof of Address, Employment Proof, Income Proof, Other
+  - PH-specific document types: SSS ID, PhilHealth ID, Postal ID, Voters ID, PRC ID, Barangay Certificate, DTI Registration, ITR
+  - Per-document verification/rejection workflow by officers
+  - Overall KYC status tracking: Not Started → In Progress → Pending Review → Verified / Rejected
+  - View uploaded documents in browser (images and PDFs)
+- **Employment Information**
+  - Employment status, employer details, position, department
+  - Monthly income and years employed
+  - Employer contact details
+  - Other income sources
+- **Customer Risk Profile**
+  - Risk level categorization: Low, Medium, High
+  - Risk score (0–100) with visual progress indicator
+  - Risk factors tracking with positive/negative/neutral impact
+  - Assessment history with officer attribution
+- **Document Management**
+  - Upload and store supporting documents (base64 storage)
+  - Organized by category with document type classification
+  - View and download uploaded files directly in browser
+  - Document status tracking: Pending → Verified / Rejected
+  - Rejection reasons for failed documents
+- **Customer Loan History**
+  - Complete record of all previous and active loans per borrower
+  - Summary statistics: total loans, total borrowed, active, completed, rejected, defaulted
+  - Direct links to individual loan detail pages
+  - Loan details: amount, status, interest rate, term, monthly payment, dates
+
 ### 💰 Loan Management
-- Multi-step loan application form
+- Multi-step loan application form with estimated monthly payment calculator (15% monthly rate)
 - Loan workflow: Draft → Submitted → Under Review → Approved/Rejected → Disbursed
 - Role-based loan actions (submit, process, approve, reject, disburse)
 - Loan status timeline/history
 - Notes system on each loan
 - Search and filter loans
+- Currency: Philippine Peso (₱)
 
 ### 📊 Dashboard & Reporting
 - Role-specific dashboards with relevant KPIs
 - Loan statistics by status and type
+- Customer statistics with KYC and risk breakdowns (admin/officer)
 - User distribution charts (admin)
 - Activity audit logs
 
 ### 🎨 UI/UX
 - DaisyUI components with custom light/dark themes
-- Responsive sidebar layout
+- Responsive sidebar layout with role-filtered navigation
 - Theme toggle (light/dark)
 - Toast notifications
-- Loading states and animations
+- Loading states and page transition animations
+- Tabbed interfaces for complex views (Customer Detail)
+- Modal dialogs for document upload, KYC review, risk assessment
 - Google Fonts: Outfit (headings), DM Sans (body), JetBrains Mono (code)
 
 ---
@@ -256,6 +295,26 @@ After running `npm run seed`:
 | PATCH | `/:id/disburse` | Disburse loan | Manager/Admin |
 | POST | `/:id/notes` | Add note | Yes |
 
+### Customers (Borrowers) — `/api/customers`
+
+| Method | Endpoint | Description | Auth |
+|--------|----------|-------------|------|
+| GET | `/` | List all customers | Admin/Officer/Manager |
+| POST | `/` | Create customer profile | Yes |
+| GET | `/stats` | Customer statistics | Admin/Officer |
+| GET | `/my-profile` | Get own customer profile | Customer |
+| GET | `/:id` | Get customer details | Yes |
+| PATCH | `/:id` | Update customer profile | Yes |
+| DELETE | `/:id` | Delete customer | Admin |
+| PATCH | `/:id/kyc/submit` | Submit KYC for review | Yes |
+| PATCH | `/:id/kyc/review` | Verify or reject KYC | Admin/Officer |
+| POST | `/:id/documents` | Upload KYC document | Yes |
+| GET | `/:id/documents/:docId` | Get document file (base64) | Yes |
+| DELETE | `/:id/documents/:docId` | Delete document | Yes |
+| PATCH | `/:id/documents/:docId/review` | Verify or reject document | Admin/Officer |
+| PATCH | `/:id/risk-profile` | Update risk assessment | Admin/Officer/Manager |
+| GET | `/:id/loan-history` | Get customer loan history | Yes |
+
 ---
 
 ## 📁 Project Structure
@@ -275,9 +334,10 @@ loan-management-system/
 │   │   ├── email.js          # Nodemailer setup
 │   │   └── roles.js          # RBAC roles & permissions
 │   ├── controllers/
-│   │   ├── authController.js # Auth logic (register, login, 2FA, etc.)
-│   │   ├── userController.js # Admin user management
-│   │   └── loanController.js # Loan CRUD + workflow
+│   │   ├── authController.js     # Auth logic (register, login, 2FA, etc.)
+│   │   ├── userController.js     # Admin user management
+│   │   ├── loanController.js     # Loan CRUD + workflow
+│   │   └── customerController.js # Customer profiles, KYC, documents, risk
 │   ├── middleware/
 │   │   ├── auth.js           # JWT protection, role checks
 │   │   ├── validation.js     # express-validator rules
@@ -285,11 +345,13 @@ loan-management-system/
 │   ├── models/
 │   │   ├── User.js           # User schema (auth, 2FA, sessions)
 │   │   ├── Loan.js           # Loan schema (workflow, history)
+│   │   ├── Customer.js       # Customer schema (KYC, documents, risk profile)
 │   │   └── ActivityLog.js    # Audit log schema
 │   ├── routes/
 │   │   ├── authRoutes.js
 │   │   ├── userRoutes.js
-│   │   └── loanRoutes.js
+│   │   ├── loanRoutes.js
+│   │   └── customerRoutes.js
 │   ├── seeds/
 │   │   └── seedAdmin.js      # Database seeder
 │   └── utils/
@@ -325,6 +387,9 @@ loan-management-system/
         │   ├── LoanList.jsx
         │   ├── LoanCreate.jsx
         │   ├── LoanDetail.jsx
+        │   ├── CustomerList.jsx      # Customer directory with search & filters
+        │   ├── CustomerForm.jsx      # Multi-step create/edit customer profile
+        │   ├── CustomerDetail.jsx    # Tabbed view: Info, KYC, Risk, Loan History
         │   ├── UserManagement.jsx
         │   ├── ActivityLogs.jsx
         │   ├── Profile.jsx
@@ -333,7 +398,7 @@ loan-management-system/
         │   └── NotFound.jsx
         └── utils/
             ├── api.js        # Axios instance + interceptors
-            └── helpers.js    # Constants, formatters, utilities
+            └── helpers.js    # Constants, formatters, KYC/risk labels
 ```
 
 ---
@@ -356,6 +421,8 @@ loan-management-system/
 | Email Verification | SHA-256 hashed tokens, 24hr expiry |
 | Password Reset | SHA-256 hashed tokens, 1hr expiry |
 | XSS Protection | React auto-escaping + Helmet headers |
+| File Validation | MIME type + file size checks on document uploads |
+| KYC Compliance | Identity verification workflow with audit trail |
 
 ---
 
@@ -406,6 +473,8 @@ The Express server serves both the API and the React build in production.
 - [ ] Set up monitoring/logging (PM2, Datadog, etc.)
 - [ ] Enable MongoDB replica set for transactions
 - [ ] Set up automated backups
+- [ ] Migrate document storage from base64/MongoDB to S3 or GCS for production scale
+- [ ] Configure file upload size limits at reverse proxy level (Nginx/Cloudflare)
 
 ---
 

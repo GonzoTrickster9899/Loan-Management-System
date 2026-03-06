@@ -19,6 +19,7 @@ import {
   HiOutlinePlusCircle,
   HiOutlineClipboardDocumentList,
   HiOutlineUserCircle,
+  HiOutlineIdentification,
 } from 'react-icons/hi2';
 
 const DashboardLayout = () => {
@@ -55,6 +56,12 @@ const DashboardLayout = () => {
       label: 'All Loans',
       path: '/loans',
       icon: HiOutlineClipboardDocumentList,
+      roles: [ROLES.ADMIN, ROLES.LOAN_OFFICER, ROLES.MANAGER],
+    },
+    {
+      label: 'Customers',
+      path: '/customers',
+      icon: HiOutlineIdentification,
       roles: [ROLES.ADMIN, ROLES.LOAN_OFFICER, ROLES.MANAGER],
     },
     {

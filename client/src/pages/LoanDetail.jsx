@@ -164,7 +164,7 @@ const LoanDetail = () => {
                 {canProcess && (
                   <div className="form-control mb-3">
                     <label className="label"><span className="label-text font-medium">Set Interest Rate (%)</span></label>
-                    <input type="number" value={interestRate} onChange={(e) => setInterestRate(e.target.value)} placeholder="15" className="input input-bordered input-sm" step="0.1" min="0" max="100" />
+                    <input type="number" value={interestRate} onChange={(e) => setInterestRate(e.target.value)} placeholder="8.5" className="input input-bordered input-sm" step="0.1" min="0" max="100" />
                   </div>
                 )}
                 <div className="form-control mb-4">
