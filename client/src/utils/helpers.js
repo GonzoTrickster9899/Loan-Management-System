@@ -55,7 +55,7 @@ export const LOAN_TYPES = {
 export const formatCurrency = (amount) => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
-    currency: 'USD',
+    currency: 'PHP',
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
   }).format(amount);

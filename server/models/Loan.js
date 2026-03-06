@@ -108,13 +108,17 @@ const loanSchema = new mongoose.Schema(
   }
 );
 
-// Generate loan number before saving
-loanSchema.pre('save', async function (next) {
+// Generate loan number before validation so required check passes
+loanSchema.pre('validate', async function (next) {
   if (this.isNew && !this.loanNumber) {
     const count = await mongoose.model('Loan').countDocuments();
     this.loanNumber = `LN-${String(count + 1).padStart(6, '0')}`;
   }
-  // Calculate monthly payment
+  next();
+});
+
+// Calculate monthly payment before saving
+loanSchema.pre('save', async function (next) {
   if (this.amount && this.interestRate && this.termMonths) {
     const r = this.interestRate / 100 / 12;
     if (r > 0) {
